@@ -15,6 +15,12 @@ app.get("/api/users", (req, res) => {
   ]);
 });
 
+app.get("/api/products", (req, res) => {
+  res.send([
+    { id: 123, name: "product1", price: 100, description: "this is product 1" },
+  ]);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
