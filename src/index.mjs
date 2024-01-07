@@ -1,6 +1,10 @@
 import express from "express";
 
 const app = express();
+
+// middleware
+app.use(express.json());
+
 const PORT = process.env.PORT || 3000;
 
 const Users = [
@@ -61,7 +65,14 @@ app.get("/api/users/:id", (req, res) => {
   res.send(user);
 });
 
-// query params
+//post request
+app.post("/api/users", (req, res) => {
+  console.log(req.body);
+  const { body } = req;
+  const newUser = { id: Users[Users.length - 1].id + 1, ...body };
+  Users.push(newUser);
+  return res.status(201).send(newUser);
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
