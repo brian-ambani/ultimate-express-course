@@ -95,6 +95,25 @@ app.put("/api/users/:id", (req, res) => {
 });
 
 // PATCH
+
+app.patch("/api/users/:id", (req, res) => {
+  const {
+    body,
+    params: { id },
+  } = req;
+
+  const parsedId = parseInt(id);
+  if (isNaN(parsedId)) return res.status(400).send({ msg: "Invalid ID" });
+
+  const findUserIndex = Users.findIndex((user) => user.id === parsedId);
+
+  if (findUserIndex === -1)
+    return res.status(404).send({ msg: "User not found" });
+
+  Users[findUserIndex] = { ...Users[findUserIndex], ...body };
+  return res.sendStatus(200);
+});
+
 // DELETE
 
 app.listen(PORT, () => {
