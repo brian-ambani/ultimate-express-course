@@ -4,9 +4,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const Users = [
-  { id: 1, username: "brain-dev", displayName: "Brain Dev" },
+  { id: 1, username: "brain", displayName: "Brain" },
   { id: 2, username: "mike", displayName: "Mike" },
   { id: 3, username: "jane", displayName: "Jane" },
+  { id: 4, username: "joe", displayName: "Joe" },
+  { id: 5, username: "james", displayName: "James" },
+  { id: 6, username: "micah", displayName: "Micah" },
+  { id: 7, username: "john", displayName: "John" },
 ];
 
 app.get("/", (req, res) => {
@@ -15,7 +19,21 @@ app.get("/", (req, res) => {
 
 // simple routes
 app.get("/api/users", (req, res) => {
-  res.send(Users);
+  // query params
+  console.log(req.query);
+  const {
+    query: { filter, value },
+  } = req;
+
+  // when filter and value are not passed
+  if (!filter && !value) return res.send(Users);
+
+  // when filter and value are passed
+  if (filter && value) {
+    return res.send(Users.filter((user) => user[filter].includes(value)));
+  }
+  //   if on of the query params is passed
+  return res.send(Users);
 });
 
 app.get("/api/products", (req, res) => {
@@ -42,6 +60,8 @@ app.get("/api/users/:id", (req, res) => {
   }
   res.send(user);
 });
+
+// query params
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
