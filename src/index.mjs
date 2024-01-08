@@ -1,4 +1,5 @@
 import express from "express";
+import { query } from "express-validator";
 
 const app = express();
 
@@ -45,7 +46,7 @@ app.get("/", (req, res) => {
 });
 
 // simple routes
-app.get("/api/users", (req, res) => {
+app.get("/api/users", query("filter").isString().notEmpty(), (req, res) => {
   // query params
   console.log(req.query);
   const {
