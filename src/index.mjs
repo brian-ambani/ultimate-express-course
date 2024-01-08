@@ -5,6 +5,15 @@ const app = express();
 // middleware
 app.use(express.json());
 
+// middleware
+
+const loggingMiddleware = (req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+};
+
+app.use(loggingMiddleware);
+
 const PORT = process.env.PORT || 3000;
 
 const Users = [
