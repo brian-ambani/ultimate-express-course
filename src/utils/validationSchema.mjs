@@ -18,10 +18,17 @@ export const createUserValidationSchema = {
   },
 };
 
-export const getUserByIdValidationSchema = {
+export const filterUserValidationSchema = {
   filter: {
     isString: {
       errorMessage: "filter must be a string",
+    },
+    notEmpty: {
+      errorMessage: "filter cannot be empty",
+    },
+    isLength: {
+      options: { min: 3, max: 10 },
+      errorMessage: "filter must be 3-10 characters",
     },
   },
 };
