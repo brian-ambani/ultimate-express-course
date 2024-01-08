@@ -1,5 +1,5 @@
 import express from "express";
-import { query } from "express-validator";
+import { query, validationResult } from "express-validator";
 
 const app = express();
 
@@ -46,23 +46,33 @@ app.get("/", (req, res) => {
 });
 
 // simple routes
-app.get("/api/users", query("filter").isString().notEmpty(), (req, res) => {
-  // query params
-  console.log(req.query);
-  const {
-    query: { filter, value },
-  } = req;
+app.get(
+  "/api/users",
+  query("filter")
+    .isString()
+    .notEmpty()
+    .withMessage("Must not be empty!")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Must be atleast 3-10 characters"),
+  (req, res) => {
+    // query params
+    const result = validationResult(req);
+    console.log(result);
+    const {
+      query: { filter, value },
+    } = req;
 
-  // when filter and value are not passed
-  if (!filter && !value) return res.send(Users);
+    // when filter and value are not passed
+    if (!filter && !value) return res.send(Users);
 
-  // when filter and value are passed
-  if (filter && value) {
-    return res.send(Users.filter((user) => user[filter].includes(value)));
+    // when filter and value are passed
+    if (filter && value) {
+      return res.send(Users.filter((user) => user[filter].includes(value)));
+    }
+    //   if on of the query params is passed
+    return res.send(Users);
   }
-  //   if on of the query params is passed
-  return res.send(Users);
-});
+);
 
 app.get("/api/products", (req, res) => {
   res.send([
