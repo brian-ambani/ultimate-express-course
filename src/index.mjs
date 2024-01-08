@@ -12,6 +12,22 @@ const loggingMiddleware = (req, res, next) => {
   next();
 };
 
+const resolveIndexByUserId = (req, res, next) => {
+  const {
+    params: { id },
+  } = req;
+
+  const parsedId = parseInt(id);
+  if (isNaN(parsedId)) return res.status(400).send({ msg: "Invalid ID" });
+
+  const findUserIndex = Users.findIndex((user) => user.id === parsedId);
+
+  if (findUserIndex === -1)
+    return res.status(404).send({ msg: "User not found" });
+  req.findUserIndex = findUserIndex;
+  next();
+};
+
 const PORT = process.env.PORT || 3000;
 
 const Users = [
@@ -24,27 +40,9 @@ const Users = [
   { id: 7, username: "john", displayName: "John" },
 ];
 
-app.get(
-  "/",
-  // (req, res, next) => {
-  //   console.log(`${req.method} ${req.url}`);
-  //   console.log("first middleware");
-  //   next();
-  // },
-  // (req, res, next) => {
-  //   console.log("second middleware");
-  //   next();
-  // },
-  // (req, res, next) => {
-  //   console.log("third middleware");
-  //   next();
-  // },
-  (req, res) => {
-    res.status(200).send({ msg: "Hello World" });
-  }
-);
-
-app.use(loggingMiddleware);
+app.get("/", (req, res) => {
+  res.status(200).send({ msg: "Hello World" });
+});
 
 // simple routes
 app.get("/api/users", (req, res) => {
@@ -72,20 +70,12 @@ app.get("/api/products", (req, res) => {
 });
 
 // route params(simple user base on the ID passed)
-app.get("/api/users/:id", (req, res) => {
-  console.log(req.params.id);
-  const parsedId = parseInt(req.params.id);
-  console.log(parsedId);
+app.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const { findUserIndex } = req;
 
-  if (isNaN(parsedId)) {
-    return res.status(400).send({ msg: "Invalid ID" });
-  }
-
-  const user = Users.find((user) => user.id === parsedId);
+  const user = Users[findUserIndex];
   if (!user) {
     return res.status(404).send({ msg: "User not found" });
-    // or
-    // return res.sendStatus(404);
   }
   res.send(user);
 });
@@ -101,39 +91,17 @@ app.post("/api/users", (req, res) => {
 
 // PUT
 
-app.put("/api/users/:id", (req, res) => {
-  const {
-    body,
-    params: { id },
-  } = req;
+app.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const { body, findUserIndex } = req;
 
-  const parsedId = parseInt(id);
-  if (isNaN(parsedId)) return res.status(400).send({ msg: "Invalid ID" });
-
-  const findUserIndex = Users.findIndex((user) => user.id === parsedId);
-
-  if (findUserIndex === -1)
-    return res.status(404).send({ msg: "User not found" });
-
-  Users[findUserIndex] = { id: parsedId, ...body };
+  Users[findUserIndex] = { id: Users[findUserIndex].id, ...body };
   return res.sendStatus(200);
 });
 
 // PATCH
 
-app.patch("/api/users/:id", (req, res) => {
-  const {
-    body,
-    params: { id },
-  } = req;
-
-  const parsedId = parseInt(id);
-  if (isNaN(parsedId)) return res.status(400).send({ msg: "Invalid ID" });
-
-  const findUserIndex = Users.findIndex((user) => user.id === parsedId);
-
-  if (findUserIndex === -1)
-    return res.status(404).send({ msg: "User not found" });
+app.patch("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const { body, findUserIndex } = req;
 
   Users[findUserIndex] = { ...Users[findUserIndex], ...body };
   return res.sendStatus(200);
@@ -141,20 +109,8 @@ app.patch("/api/users/:id", (req, res) => {
 
 // DELETE
 
-app.delete("/api/users/:id", (req, res) => {
-  const {
-    params: { id },
-  } = req;
-
-  const parsedId = parseInt(id);
-
-  if (isNaN(parsedId)) return res.status(400).send({ msg: "Invalid ID" });
-
-  const findUserIndex = Users.findIndex((user) => user.id === parsedId);
-
-  if (findUserIndex === -1)
-    return res.status(404).send({ msg: "User not found" });
-
+app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const { findUserIndex } = req;
   Users.splice(findUserIndex, 1);
   return res.sendStatus(200);
 });
