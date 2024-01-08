@@ -12,8 +12,6 @@ const loggingMiddleware = (req, res, next) => {
   next();
 };
 
-app.use(loggingMiddleware);
-
 const PORT = process.env.PORT || 3000;
 
 const Users = [
@@ -26,9 +24,27 @@ const Users = [
   { id: 7, username: "john", displayName: "John" },
 ];
 
-app.get("/", (req, res) => {
-  res.status(200).send({ msg: "Hello World" });
-});
+app.get(
+  "/",
+  // (req, res, next) => {
+  //   console.log(`${req.method} ${req.url}`);
+  //   console.log("first middleware");
+  //   next();
+  // },
+  // (req, res, next) => {
+  //   console.log("second middleware");
+  //   next();
+  // },
+  // (req, res, next) => {
+  //   console.log("third middleware");
+  //   next();
+  // },
+  (req, res) => {
+    res.status(200).send({ msg: "Hello World" });
+  }
+);
+
+app.use(loggingMiddleware);
 
 // simple routes
 app.get("/api/users", (req, res) => {
