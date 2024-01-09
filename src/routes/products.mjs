@@ -7,5 +7,4 @@ router.get("/products", (req, res) => {
     { id: 123, name: "product1", price: 100, description: "this is product 1" },
   ]);
 });
-
 export default router;
