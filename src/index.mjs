@@ -1,23 +1,19 @@
 import express from "express";
 
-import usersroutes from "./routes/users.mjs";
+import usersrouter from "./routes/users.mjs";
+import productsrouter from "./routes/products.mjs";
 
 const app = express();
 
 // middleware
 app.use(express.json());
-app.use(usersroutes);
+app.use(usersrouter);
+app.use(productsrouter);
 
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.status(200).send({ msg: "Hello World" });
-});
-
-app.get("/api/products", (req, res) => {
-  res.send([
-    { id: 123, name: "product1", price: 100, description: "this is product 1" },
-  ]);
 });
 
 app.listen(PORT, () => {
