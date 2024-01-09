@@ -13,33 +13,29 @@ const router = Router();
 //   res.send(Users);
 // });
 
-router.get(
-  "/api/users",
-  checkSchema(filterUserValidationSchema),
-  (req, res) => {
-    const result = validationResult(req);
+router.get("/users", checkSchema(filterUserValidationSchema), (req, res) => {
+  const result = validationResult(req);
 
-    if (!result.isEmpty()) {
-      return res.status(400).send({ errors: result.array() });
-    }
-    const data = matchedData(req);
-    console.log(data);
-    const {
-      query: { filter, value },
-    } = req;
-
-    // when filter and value are not passed
-    if (!filter && !value) return res.send(Users);
-
-    // when filter and value are passed
-    if (filter && value) {
-      return res.send(Users.filter((user) => user[filter].includes(value)));
-    }
-    //   if on of the query params is passed
-    return res.send(Users);
+  if (!result.isEmpty()) {
+    return res.status(400).send({ errors: result.array() });
   }
-);
-router.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const data = matchedData(req);
+  console.log(data);
+  const {
+    query: { filter, value },
+  } = req;
+
+  // when filter and value are not passed
+  if (!filter && !value) return res.send(Users);
+
+  // when filter and value are passed
+  if (filter && value) {
+    return res.send(Users.filter((user) => user[filter].includes(value)));
+  }
+  //   if on of the query params is passed
+  return res.send(Users);
+});
+router.get("/users/:id", resolveIndexByUserId, (req, res) => {
   const { findUserIndex } = req;
 
   const user = Users[findUserIndex];
@@ -49,23 +45,19 @@ router.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
   res.send(user);
 });
 
-router.post(
-  "/api/users",
-  checkSchema(createUserValidationSchema),
-  (req, res) => {
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).send({ errors: result.array() });
-    }
-    const data = matchedData(req);
-
-    const newUser = { id: Users[Users.length - 1].id + 1, ...data };
-    Users.push(newUser);
-    return res.status(201).send(newUser);
+router.post("/users", checkSchema(createUserValidationSchema), (req, res) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).send({ errors: result.array() });
   }
-);
+  const data = matchedData(req);
 
-router.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
+  const newUser = { id: Users[Users.length - 1].id + 1, ...data };
+  Users.push(newUser);
+  return res.status(201).send(newUser);
+});
+
+router.put("/users/:id", resolveIndexByUserId, (req, res) => {
   const { body, findUserIndex } = req;
 
   Users[findUserIndex] = { id: Users[findUserIndex].id, ...body };
@@ -74,7 +66,7 @@ router.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 // PATCH
 
-router.patch("/api/users/:id", resolveIndexByUserId, (req, res) => {
+router.patch("/users/:id", resolveIndexByUserId, (req, res) => {
   const { body, findUserIndex } = req;
 
   Users[findUserIndex] = { ...Users[findUserIndex], ...body };
@@ -83,7 +75,7 @@ router.patch("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 // DELETE
 
-router.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
+router.delete("/users/:id", resolveIndexByUserId, (req, res) => {
   const { findUserIndex } = req;
   Users.splice(findUserIndex, 1);
   return res.sendStatus(200);
